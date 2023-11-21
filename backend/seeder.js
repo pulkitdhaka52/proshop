@@ -8,7 +8,7 @@ import Product from "./models/productModel.js";
 import Order from "./models/orderModel.js";
 import connectDb from "./config/db.js";
 dotenv.config();
-connectDb();
+await connectDb();
 
 const importData = async () =>{
     try {

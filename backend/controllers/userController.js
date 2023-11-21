@@ -13,7 +13,6 @@ import generateToken from "../utils/generateToken.js";
 const authUser = asyncHandler(async(req,resp)=>{
     const {email, password} = req.body;
     const user = await userModel.findOne({email: email});
-    console.log
     if(user && (await user.matchPassword(password))){
         generateToken(resp, user._id);
         resp.status(200).json({
@@ -140,7 +139,13 @@ const updateUserProfile = asyncHandler(async(req,resp)=>{
  * @access Private/Admin
  */
 const getUsers = asyncHandler(async(req,resp)=>{
-    resp.send('get user lists');
+    const users = await userModel.find({});
+    if(users){
+        resp.status(200).json(users);
+    }else{
+        resp.status(404);
+        throw new Error('Not found');
+    }
 })
 
 /**
@@ -150,7 +155,13 @@ const getUsers = asyncHandler(async(req,resp)=>{
  * @access Private/Admin
  */
 const getUserById = asyncHandler(async(req,resp)=>{
-    resp.send('get user by id for admin');
+    const user = await userModel.findById(req.params.id);
+    if(user){
+        resp.status(200).json(user);
+    }else{
+        resp.status(404);
+        throw new Error('Resource not found');
+    }
 })
 
 /**
@@ -160,7 +171,14 @@ const getUserById = asyncHandler(async(req,resp)=>{
  * @access Private/Admin
  */
 const deleteUser = asyncHandler(async(req,resp)=>{
-    resp.send('user deleted from admin by id');
+    const user = await userModel.findById(req.params.id);
+    if(user){
+        await userModel.deleteOne({_id: user._id});
+        resp.status(200).json({message: 'User deleted'});
+    }else{
+        resp.status(404);
+        throw new Error('Resource not found');
+    }
 })
 
 /**
@@ -170,7 +188,18 @@ const deleteUser = asyncHandler(async(req,resp)=>{
  * @access Private/Admin
  */
 const updateUser = asyncHandler(async(req,resp)=>{
-    resp.send('update user by id');
+    const user = await userModel.findById(req.body.userId);
+    if(user){
+        user.name =  req.body.name || user.name;
+        user.email =  req.body.email || user.email;
+        user.isAdmin =  req.body.isAdmin || user.isAdmin;
+        
+        await user.save();
+        resp.status(200).json({message: 'User updated successfully'});
+    }else{
+        resp.status(404);
+        throw new Error('Resource not found');
+    } 
 })
 
 export  { authUser, registerUser, logoutUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser}
