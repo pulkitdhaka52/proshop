@@ -70,14 +70,6 @@ const OrderScreen = () => {
     });
   }
 
-  // TESTING ONLY! REMOVE BEFORE PRODUCTION
-  // async function onApproveTest() {
-  //   await payOrder({ orderId, details: { payer: {} } });
-  //   refetch();
-
-  //   toast.success('Order is paid');
-  // }
-
   function onError(err) {
     toast.error(err.message);
   }
@@ -97,12 +89,8 @@ const OrderScreen = () => {
   }
 
   const deliverHandler = async () => {
-    try {
-      await deliverOrder(orderId);
-      refetch();  
-    } catch (err) {
-      toast.error(err?.data?.message || err.error);
-    }
+    await deliverOrder(orderId);
+    refetch();
   };
 
   return isLoading ? (
